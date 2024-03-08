@@ -3,7 +3,6 @@ import numpy as np
 import pickle
 import VAR_func
 from mpi4py import MPI
-import matplotlib.pyplot as plt
 import time
 ##############################################################################################
 ### ser-up
