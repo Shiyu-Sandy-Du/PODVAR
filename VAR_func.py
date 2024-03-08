@@ -1,20 +1,9 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Apr  6 10:49:01 2023
-
-@author: shiyud
-"""
-
 import statsmodels.api as sm
 import numpy as np
 import scipy
 import time
 
 ###
-# dataSet = T_coeff_raw[0,:,0::2]
-# dataSet = dataSet - np.mean(dataSet,axis=0)
-
 def sig_group(dataSet,threshold_lowccf=0.1):
     """group signals according to max[abs(ccf)]"""
     ## input dataSet should be a npl-by-num_sig array
@@ -59,99 +48,19 @@ def VAR_orderSelection(f):
             ccfrange = 300 ### truncate the ccf
             ccf = sm.tsa.stattools.ccf(f[:,sig1],f[:,sig2])[:ccfrange+1]
             absccf = abs(ccf)
-            # flag_min = False
-            
-            ## find the range of searching
-            # lim_search = 0 # for strategy 1-3, search from 0
-            
-            # ### strategy 1: second zero-crossing
-            # flag_zero1 = False
-            # for i in range(lim_search,ccfrange):
-            #     if flag_zero1 == False and ccf[i]*ccf[i+1] < 0:
-            #         flag_zero1 = True
-            #     elif flag_zero1 == True and ccf[i]*ccf[i+1] < 0:
-            #         lim_search = i
-            #         break
-                
-            # ## strategy 2: second or third zero-crossing, depending on initial tendency
-            # num_cross = 0
-            # if (ccf[1]-ccf[0])*ccf[0] > 0:
-            #     num_cross = 2
-            # else:
-            #     num_cross = 3
-            
-            # if num_cross == 2:
-            #     flag_zero1 = False
-            #     for i in range(lim_search,ccfrange):
-            #         if flag_zero1 == False and ccf[i]*ccf[i+1] < 0:
-            #             flag_zero1 = True
-            #         elif flag_zero1 == True and ccf[i]*ccf[i+1] < 0:
-            #             lim_search = i
-            #             break
-            # elif num_cross == 3:
-            #     flag_zero1 = False
-            #     flag_zero2 = False
-            #     for i in range(lim_search,ccfrange):
-            #         if flag_zero1 == False and flag_zero2 == False and ccf[i]*ccf[i+1] < 0:
-            #             flag_zero1 = True
-            #             # if sig1==sig2==0:
-            #             #     print("first",i)
-            #         elif flag_zero1 == True and flag_zero2 == False and ccf[i]*ccf[i+1] < 0:
-            #             flag_zero2 = True
-            #             # if sig1==sig2==0:
-            #             #     print("second",i)
-            #         elif flag_zero1 == True and flag_zero2 == True and ccf[i]*ccf[i+1] < 0:
-            #             lim_search = i
-            #             # if sig1==sig2==0:
-            #             #     print("third",i)
-            #             break
-        
-            # ## strategy 3: pick first several relevant peaks, and ends at the last one
-            # peak_valid = False
-            # # bound_l = 0
-            # bound_r = 0    
-            # for i in range(1,ccfrange):
-            #     if absccf[i] > threshold_drop:
-            #         peak_valid = True
-            #     if peak_valid == True and ccf[i]*ccf[i+1]<0:
-            #         # bound_l = bound_r ## move bounds to right
-            #         bound_r = i
-            #         peak_valid = False ## reset for new peak
-            #     elif peak_valid == False and ccf[i]*ccf[i+1]<0:
-            #         # print("AAOO:",bound_l)
-            #         lim_search = bound_r
-            #         break
-        
             lim_search1 = 0
             ## strategy 4: end of the last valid peak while keep two zero-crossings
-            # flag_peak = False
-            # zerocross = ccfrange
             for i in range(ccfrange,0,-1):
                 if absccf[i] > threshold_drop:
                     lim_search1 = i
                     break
             for i in range(lim_search1,ccfrange):
                 if ccf[i]*ccf[i+1]<0:
-                # if absccf[i] < absccf[i+1]:
                     lim_search1 = i
                     break
-            # keep two zero-crossings
-            #lim_search2 = 0
-            #flag_zero1 = False
-            #for i in range(ccfrange):
-            #    # if flag_zero1 == False and ccf[i]*ccf[i+1] < 0:
-            #    if flag_zero1 == False:
-            #        if ccf[i]*ccf[i+1] < 0:
-            #            flag_zero1 = True
-            #    # elif flag_zero1 == True and ccf[i]*ccf[i+1] < 0:
-            #    elif flag_zero1 == True and ccf[i]*ccf[i+1]<0:
-            #        lim_search2 = i
-            #        break
-            #lim_search = max(lim_search1,lim_search2)
             lim_search = lim_search1
             ### Set integral time scale for each signal
             if sig1 == sig2:
-                # print("ITS for",sig1,":",lim_search)
                 integralTimeScaleLag[sig1] = lim_search
             
             ## Check whether there is at least one valid peak
@@ -165,11 +74,7 @@ def VAR_orderSelection(f):
             else:
                 index_lowccf.append(lim_search)
                 
-    #orderVAR = int(max(integralTimeScaleLag))   ##### choose the order
     orderVAR = int(max(index_lowccf))
-    #for i in range(len(index_lowccf)):
-        #if index_lowccf[i] > orderVAR:
-            #index_lowccf[i] = orderVAR
             
     index_lowccf = np.reshape(np.array(index_lowccf),(num_sig,num_sig))    
     print("order of VAR:",orderVAR)

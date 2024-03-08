@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Thu May  10 15:23:33 2023
-
-@author: shiyud
-"""
 import h5py
 import numpy as np
 import pickle
@@ -12,23 +5,24 @@ import VAR_func
 from mpi4py import MPI
 import matplotlib.pyplot as plt
 import time
-#############################################################################################
-#############################################################################################
-#######################################################################################
-#
-VARmodelpath = "/scratch/shiyud/POD_TBL/ReTheta_790/VAR/data/"
-VARmodelname = "VARfit_param_sigGrouping_5"
+##############################################################################################
+### ser-up
+VARmodelpath = "" ## path name of VAR model parameters from VAR_multiSig.py
+VARmodelname = "" ## file name of VAR model parameters from VAR_multiSig.py
 
-inputpath = "/scratch/shiyud/POD_TBL/ReTheta_790/"
-intputname = "t_coeffs_5"
+inputpath = "" ## path name of the time series used to fit the model
+inputname = "" ## file name of the time series used to fit the model
+time_series_name_matlab = "" ## name of time series in matlab
 
-outputpath = "/scratch/shiyud/POD_TBL/ReTheta_790/VAR/data/"
-outputname = "T_coeff_Emu0_5_100k_0"
+outputpath = "" ## path name of the emulated time series from VAR model
+outputname = "" ## file name of the emulated time series from VAR model
 
 npl = 22900 # number of planes for the input
 nz_half = 97 # number of wavenumber for the input
 nmodes = 5 # number of POD modes for the input
 step_Emu = 100000 # number of emulations
+
+#############################################################################################
 ### MPI parameters
 comm = MPI.COMM_WORLD
 size = comm.Get_size()
@@ -62,7 +56,7 @@ mean_sig = param['mean_sig']
 modeSep = param['modeSep']
 
 #%% Load original signals
-T_coeff_raw = h5py.File(inputpath+intputname+".mat",'r')
+T_coeff_raw = h5py.File(inputpath+inputname+".mat",'r')
 T_coeff_raw = np.array(T_coeff_raw['bb_trunc'])
 ### shape of T_coeff_raw [nkz,npl,nmode]
 ### Transpose to npl*nmode*nkz

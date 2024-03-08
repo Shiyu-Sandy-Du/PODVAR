@@ -1,25 +1,25 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Thu May  10 10:28:33 2023
-
-@author: shiyud
-"""
 import numpy as np
 import h5py
 import time
 import VAR_func
 import sys
 ##############################################################################
-#%% data reading
+#%% set-up
+check_stability = False # whether or not check the stability of the VAR model
 t_start = time.time()
 """Read the T-coefficient data file""" 
-# T_coeff_raw = h5py.File("/scratch/shiyud/POD_TBL/ReTheta_790/t_coeffs_5.mat",'r')
-T_coeff_raw = h5py.File("/scratch/shiyud/POD_TBL/ReTheta_790/t_coeffs_5pc.mat",'r')
-T_coeff_raw = np.array(T_coeff_raw['bb_trunc'])
+time_series_filepath = ""
+time_series_filename = "" ## POD time coefficients
+time_series_name_matlab = "" ## name of time series in matlab
+timestep = 22900 ## number of planes used to fit the VAR model
+output_filepath = ""
+output_filename = "" ## parameters of VAR model
+################################################################################
+#%% data reading
+T_coeff_raw = h5py.File(time_series_filepath + time_series_filename + ".mat",'r')
+T_coeff_raw = np.array(T_coeff_raw[time_series_name_matlab])
 
 ### Transpose to npl*nmode*nkz
-timestep = 22900
 T_coeff_raw = np.transpose(T_coeff_raw,(1,2,0))[-timestep:,:,:]
 ### get the dimensions
 npl = np.shape(T_coeff_raw)[0]
@@ -95,13 +95,14 @@ for ikz in range(nz_half):
         print("time for VAR modelling: ",t_VARtrainEnd-t_VARtrainStart,"s")
         
         """Check the stability of the VAR model"""
-        #t_VARstableStart = time.time()
-        #eig = np.real(VAR_func.VAR_stable(coeff_mat,orderVAR,num_sig))
-        #print("largest eigen value's magnitude: ",eig) ### the returned value is already mag
-        #if eig > 1:
-        #    sys.exit('unstable VAR model')
-        #t_VARstableEnd = time.time()
-        #print("time for VAR stability: ",t_VARstableEnd-t_VARstableStart,"s")
+        if check_stability == True:
+            t_VARstableStart = time.time()
+            eig = np.real(VAR_func.VAR_stable(coeff_mat,orderVAR,num_sig))
+            print("largest eigen value's magnitude: ",eig) ### the returned value is already mag
+            if eig > 1:
+                sys.exit('unstable VAR model')
+            t_VARstableEnd = time.time()
+            print("time for VAR stability: ",t_VARstableEnd-t_VARstableStart,"s")
         
         list_VAR_intercept_curr.append(VAR_intercept)
         list_coeff_mat_curr.append(coeff_mat)
@@ -127,7 +128,7 @@ VARfit_param = {
 }
 print("save parameters")
 import pickle
-with open('/scratch/shiyud/POD_TBL/ReTheta_790/VAR/data/VARfit_param_sigGrouping_5pc.pkl','wb') as fp:
+with open(output_filepath + output_filename + '.pkl','wb') as fp:
     pickle.dump(VARfit_param,fp)
 
 tfinish = time.time()
