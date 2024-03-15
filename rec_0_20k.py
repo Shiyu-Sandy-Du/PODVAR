@@ -1,3 +1,6 @@
+#################################################################
+############ Here is an examples of field reconstruction
+############ suppose we want ot reconstruct 20 thousands snapshots
 import h5py
 import numpy as np
 from mpi4py import MPI
