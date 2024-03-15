@@ -11,13 +11,16 @@ t_start = time.time()
 time_series_filepath = ""
 time_series_filename = "" ## POD time coefficients
 time_series_name_matlab = "" ## name of time series in matlab
-timestep = 22900 ## number of planes used to fit the VAR model
+timestep = ## number of planes used to fit the VAR model
 output_filepath = ""
 output_filename = "" ## parameters of VAR model
+kz_tune = [0] # kz with a different strong ccf criteria (i.e. critical_ccf_tune)
+critical_ccf = 0.1
+critical_ccf_tune = 0.3
 ################################################################################
 #%% data reading
 T_coeff_raw = h5py.File(time_series_filepath + time_series_filename + ".mat",'r')
-T_coeff_raw = np.array(T_coeff_raw[time_series_name_matlab])
+T_coeff_raw = np.array(T_coeff_raw[time_series_name_matlab],,dtype=np.float64)
 
 ### Transpose to npl*nmode*nkz
 T_coeff_raw = np.transpose(T_coeff_raw,(1,2,0))[-timestep:,:,:]
@@ -27,9 +30,7 @@ nmodes = int(np.shape(T_coeff_raw)[1]/2)
 nz_half = np.shape(T_coeff_raw)[2]
 T_coeff_r = np.zeros((npl,nmodes,nz_half))
 T_coeff_i = np.zeros((npl,nmodes,nz_half))  
-dt = 1.133
-l_star = 0.0468; u_tau = 0.0475; t_tau = l_star/u_tau
-tplus = np.array([i*dt/t_tau for i in range(npl)])
+
 ###The raw T_coeff matrix store real and imag part separately, and need to be merge into a complex matrix
 for i in range(nmodes):
     for j in range(nz_half):
@@ -53,12 +54,10 @@ for ikz in range(nz_half):
         f_pre = T_coeff_r[:,:,ikz] - mean_sig[0::2,ikz]
     else: 
         f_pre = T_coeff_raw[:,:,ikz] - mean_sig[:,ikz]
-    if ikz == 0:
-        group_all = VAR_func.sig_group(f_pre,threshold_lowccf=0.3)
-    elif ikz == 14 or ikz == 13 or ikz == 8 or ikz == 9:
-        group_all = VAR_func.sig_group(f_pre,threshold_lowccf=0.1)
+    if ikz in kz_tune:
+        group_all = VAR_func.sig_group(f_pre,threshold_lowccf=critical_ccf_tune)
     else:    
-        group_all = VAR_func.sig_group(f_pre,threshold_lowccf=0.1)
+        group_all = VAR_func.sig_group(f_pre,threshold_lowccf=critical_ccf)
     num_group = len(group_all)
     countgroup = 0
     list_VAR_intercept_curr = []

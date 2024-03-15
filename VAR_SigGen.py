@@ -16,10 +16,10 @@ time_series_name_matlab = "" ## name of time series in matlab
 outputpath = "" ## path name of the emulated time series from VAR model
 outputname = "" ## file name of the emulated time series from VAR model
 
-npl = 22900 # number of planes for the input
-nz_half = 97 # number of wavenumber for the input
-nmodes = 5 # number of POD modes for the input
-step_Emu = 100000 # number of emulations
+npl =  # number of planes for the input
+nz_half =  # number of wavenumber for the input
+nmodes =  # number of POD modes per wavenumber for the input
+step_Emu =  # number of emulations
 
 #############################################################################################
 ### MPI parameters
@@ -56,7 +56,7 @@ modeSep = param['modeSep']
 
 #%% Load original signals
 T_coeff_raw = h5py.File(inputpath+inputname+".mat",'r')
-T_coeff_raw = np.array(T_coeff_raw['bb_trunc'])
+T_coeff_raw = np.array(T_coeff_raw['bb_trunc'],,dtype=np.float64)
 ### shape of T_coeff_raw [nkz,npl,nmode]
 ### Transpose to npl*nmode*nkz
 T_coeff_raw = np.transpose(T_coeff_raw,(1,2,0))
@@ -64,7 +64,7 @@ T_coeff_raw = np.transpose(T_coeff_raw,(1,2,0))
 #%% Generate time series
 ## demean the time series
 T_coeff_demean = T_coeff_raw - mean_sig
-f_fcst_local = np.zeros((kz_size,step_Emu,2*nmodes))
+f_fcst_local = np.zeros((kz_size,step_Emu,2*nmodes),dtype=np.float64)
 for ikz in range(kz_size):
     print('kz:',kz_sc[ikz],'rank',rank)
     if kz_sc[ikz] == 0 or kz_sc[ikz] == nz_half-1:
@@ -105,7 +105,7 @@ else: # process 0
     f_fcst = np.zeros((nz_half,step_Emu,2*nmodes))  # initialize final results with results from process 0
     f_fcst[kz_container[0],:,:] = f_fcst_local
     for ipro in range(1,size):    #kz_container: list[processor][wavenumber]
-        tmp = np.empty((len(kz_container[ipro]),step_Emu,2*nmodes))  # create empty array to receive results
+        tmp = np.empty((len(kz_container[ipro]),step_Emu,2*nmodes),dtype=np.float64)  # create empty array to receive results
         comm.Recv(tmp, source=ipro, tag=0)  # receive results from the process
         f_fcst[kz_container[ipro],:,:] = tmp  # add the received results to the final results
 
