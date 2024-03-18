@@ -5,7 +5,7 @@ import VAR_func
 from mpi4py import MPI
 import time
 ##############################################################################################
-### ser-up
+### set-up
 VARmodelpath = "" ## path name of VAR model parameters from VAR_multiSig.py
 VARmodelname = "" ## file name of VAR model parameters from VAR_multiSig.py
 
