@@ -5,7 +5,7 @@ import VAR_func
 import sys
 ##############################################################################
 #%% set-up
-# kind remind:
+# kind reminder:
 # It's cheaper to check the stability from the lambda_z-PSD of the resulting velocified in the end.
 # In this way, the kz of which the PODVAR model becomes unstable could be identified...
 # Then it is possible to stabilize it either by setting the constraint in VAR_func.VAR_fitting() to be true,
