@@ -5,6 +5,8 @@ import VAR_func
 import sys
 ##############################################################################
 #%% set-up
+# kind remind:
+# it's cheaper to check the stability from the lambda_z-PSD of the resulting velocified in the end
 check_stability = False # whether or not check the stability of the VAR model
 t_start = time.time()
 """Read the T-coefficient data file""" 
