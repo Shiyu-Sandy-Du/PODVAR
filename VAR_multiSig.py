@@ -6,7 +6,10 @@ import sys
 ##############################################################################
 #%% set-up
 # kind remind:
-# it's cheaper to check the stability from the lambda_z-PSD of the resulting velocified in the end
+# It's cheaper to check the stability from the lambda_z-PSD of the resulting velocified in the end.
+# In this way, the kz of which the PODVAR model becomes unstable could be identified...
+# Then it is possible to stabilize it either by setting the constraint in VAR_func.VAR_fitting() to be true,
+# or by adding that particular kz into kz_tune.
 check_stability = False # whether or not check the stability of the VAR model
 t_start = time.time()
 """Read the T-coefficient data file""" 
