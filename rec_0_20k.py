@@ -64,7 +64,7 @@ if rank==0:
 
 """Parallelled codes for reconstruction"""
 t_step_op = time.time()
-local_urec = np.tensordot(local_modes,T_coef, axes=([2,3],[1,2]))    
+local_urec = np.tensordot(local_modes,T_coef, axes=([2,3],[1,2])).astype(np.float64)     
 
 """Send the result to processor 0"""    
 if rank > 0:
