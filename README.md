@@ -1,5 +1,5 @@
 # PODVAR
-This is a place to the python code to perform model fitting and time series prediction related to Vector Autoregression (VAR) model for Fourier-based Proper Orthogonal Decomposition (POD) time coefficients.
+This repo is the python code used in [1] to perform model fitting and time series prediction related to Vector Autoregression (VAR) model for Fourier-based Proper Orthogonal Decomposition (POD) time coefficients.
 
 nz: the number of the points in the direction where Fourier transform is performed;
 
@@ -26,3 +26,4 @@ statsmodels, numpy, scipy, time, h5py, sys, pickle, mpi4py.
 
 4. Use rec_0_20k.py to reconstruct the field
 
+[1] Stanly R, Du S, Xavier D, et al. Generating synthetic turbulence with vector autoregression of proper orthogonal decomposition time coefficients. Journal of Fluid Mechanics. 2024;1000:A83. doi:10.1017/jfm.2024.1034
